@@ -2,25 +2,52 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "tile.cpp"
+#include "puzzleGenerator.cpp"
+
 using namespace std;
 
 class game{
 public:
   char difficulty;
-  game(sf::RenderWindow &window, char d){
+  sf::RenderWindow *window;
+  mainMenu *menu;
+  bool gameOver;
+  game(char d, mainMenu *m){
+    bool gameOver = false;
     difficulty = d;
+    menu = m;
   }
 
-  bool generateBoard(tile **puzzle);
-  bool generatePuzzle();
-  void runGame();
+  bool startGame();
 };
 
-bool game::generateBoard(tile **puzzle){
-  return true;
-}
+bool game::startGame(){
+  puzzleGenerator* p = new puzzleGenerator();
+  p->generatePuzzle(1,1);
+  p->printPuzzle();
+  window = menu->getWindow();
+  //reset background
+  sf::Texture texture;
+  if(!texture.loadFromFile("background.jpg")){
+    cout << "Background error" << endl;
+  }
+  sf::Sprite background(texture);
+  window->draw(background);
+  window->display();
 
-bool game::generatePuzzle(){
-  cout << difficulty << endl;
-  return true;
+  while (gameOver==false){
+
+    //Display current puzzle
+
+    // Event processing, get user input
+    sf::Event event;
+    while (window->waitEvent(event))
+    {
+      // Request for closing the window
+      if (event.type == sf::Event::Closed){
+        window->close();
+        return false;
+      }
+    }
+  }
 }
