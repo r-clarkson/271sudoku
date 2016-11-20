@@ -12,20 +12,28 @@ public:
   sf::RenderWindow *window;
   mainMenu *menu;
   bool gameOver;
+  puzzleGenerator* p;
   game(char d, mainMenu *m){
     bool gameOver = false;
     difficulty = d;
     menu = m;
+    p = new puzzleGenerator();
+    p->generatePuzzle(1,1);
   }
 
   bool startGame();
 };
-
+/**
+* Clears and resets background, then continues in loop of:
+* 1: Display current puzzle (uses display puzzle function)
+* 2: Get user input (uses user input function)
+* 3: Update current puzzle (uses update puzzle function)
+*/
 bool game::startGame(){
-  puzzleGenerator* p = new puzzleGenerator();
-  p->generatePuzzle(1,1);
+
   p->printPuzzle();
   window = menu->getWindow();
+  
   //reset background
   sf::Texture texture;
   if(!texture.loadFromFile("background.jpg")){

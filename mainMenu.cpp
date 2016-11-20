@@ -20,9 +20,12 @@ public:
 sf::RenderWindow* mainMenu::getWindow(){
   return window;
 }
-
+/**
+* Uses SFML to make a main menu and let the user click on which difficulty they want to play
+* Returns the char of difficulty clicked on
+*/
 char mainMenu::chooseDifficulty(){
-  // Event processing
+  //sets background
   sf::Event event;
   sf::Texture texture;
   if(!texture.loadFromFile("background.jpg")){
@@ -37,18 +40,17 @@ char mainMenu::chooseDifficulty(){
     cout << "Font Error" << endl;
 
   }
+  //creates Soduku title box
   sf::Text start("Sudoku",font);
   start.setCharacterSize(150);
   start.setColor(sf::Color::White);
   start.setOutlineColor(sf::Color::Black);
   start.setOutlineThickness(7);
-
-
   //to center text
   sf::FloatRect temp = start.getLocalBounds();
   start.setOrigin(temp.left + temp.width/2.0f, temp.top  + temp.height/2.0f);
   start.setPosition(sf::Vector2f(width/2.1f,height/8.0f));
-  //black background of first button
+  //black background of title
   sf::RectangleShape r1;
   r1.setSize(sf::Vector2f(start.getLocalBounds().width+10,start.getLocalBounds().height+10));
   r1.setPosition(sf::Vector2f(width/2.1f,height/6.5f));
@@ -57,7 +59,7 @@ char mainMenu::chooseDifficulty(){
   r1.setOutlineColor(sf::Color::White);
   r1.setOutlineThickness(5);
 
-  //create text for buttons
+  //create text easy button
   sf::Text e("EASY",font);
   e.setCharacterSize(150);
   e.setColor(sf::Color::White);
@@ -87,6 +89,7 @@ char mainMenu::chooseDifficulty(){
   temp = h.getLocalBounds();
   h.setOrigin(temp.left + temp.width/2.0f, temp.top  + temp.height/2.0f);
   h.setPosition(sf::Vector2f(width/2.1f,height/1.8f));
+
   //drawing all elements, then displaying
   window->draw(background);
   window->draw(r1);
@@ -96,6 +99,7 @@ char mainMenu::chooseDifficulty(){
   window->draw(start);
 
   window->display();
+  
   //returns the char e,m, or h depending on which button the user clicks
   while (window->waitEvent(event)){
     switch (event.type)
