@@ -59,8 +59,8 @@ char mainMenu::chooseDifficulty(){
   start.setPosition(sf::Vector2f(width/2.1f,height/8.0f));
   //black background of title
   sf::RectangleShape r1;
-  r1.setSize(sf::Vector2f(width,start.getLocalBounds().height+10));
-  r1.setPosition(sf::Vector2f(width/10.0f,height/6.5f));
+  r1.setSize(sf::Vector2f(start.getLocalBounds().width+30,start.getLocalBounds().height+30));
+  r1.setPosition(sf::Vector2f(width/2.12f,height/6.7f));
   r1.setOrigin(start.getOrigin());
   r1.setFillColor(sf::Color::Black);
   r1.setOutlineColor(sf::Color::White);
@@ -109,14 +109,12 @@ char mainMenu::chooseDifficulty(){
 
   //returns the char e,m, or h depending on which button the user clicks
   while (window->waitEvent(event)){
-    switch (event.type)
-    {
+    if(event.type == sf::Event::Closed){
       // window closed
-      case sf::Event::Closed:
       window->close();
-      break;
+    }
 
-      case sf::Event::MouseButtonPressed:
+    else if (event.type == sf::Event::MouseButtonPressed){
       if (e.getGlobalBounds().contains(event.mouseButton.x,event.mouseButton.y)){
         return 'e';
       }

@@ -41,6 +41,7 @@ public:
 
   void printPuzzle();
   int getVal(int row, int col);
+  tile getTile(int row, int col);
 };
 
 /**
@@ -48,6 +49,9 @@ public:
 */
 int puzzleGenerator::getVal(int row, int col){
   return puzzle[row][col].getValue();
+}
+tile puzzleGenerator::getTile(int row, int col){
+  return puzzle[row][col];
 }
 /**
 * Prints all puzzle values (used for testing)
