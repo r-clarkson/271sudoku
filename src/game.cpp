@@ -9,17 +9,23 @@ using namespace std;
 
 /**
 * Clears and resets background, then continues in loop of:
-* 1: Display current puzzle (uses display puzzle function)
-* 2: Get user input (uses user input function)
-* 3: Update current puzzle (uses update puzzle function)
+* 1: Display current puzzle
+* 2: Get user input
+* 3: Update current puzzle
 */
 
+
+/**
+* This function takes in a location and the user's input
+* Input is marked as correct or incorrect and then displayed
+*/
 sf::Text game::enterValue(int row, int col, int val){
   sf::Font font;
   if (!font.loadFromFile("resources/CourierNew.ttf")){
     cout << "font error" << endl;
     window->close();
   }
+  //If value is 10, user has asked for a hint, so draw the next blank tile
   if (val == 10){
     for (int i = 0; i < 9; i ++){
       for (int j = 0; j < 9; j++){
@@ -33,8 +39,9 @@ sf::Text game::enterValue(int row, int col, int val){
       }
     }
   }
+  //Otherwise, mark value as correct or incorrect by placing it in right vector
+  //Then set the tile's value to the input and return the tiles to display
   else{
-
     tiles[row][col].setFont(font);
     tiles[row][col].setFillColor(sf::Color::Black);
     tiles[row][col].setOutlineColor(sf::Color::Black);
@@ -54,28 +61,36 @@ sf::Text game::enterValue(int row, int col, int val){
       wrong[numWrong].col = col;
       numWrong++;
     }
-
     return tiles[row][col];
   }
+  return tiles[row][col];
 }
 
+/**
+* If value matches that of the original puzzle, returns true
+*/
 bool game::valueCorrect(int row, int col){
   if (tiles[row][col].getString() == to_string(p->getVal(row,col))){
     return true;
   }
   return false;
 }
-
+/**
+* Displays the background and board
+*/
 void game::drawBoardBackground(){
+  //loads font
   sf::Font font;
   if (!font.loadFromFile("resources/CourierNew.ttf")){
     cout << "font error" << endl;
     window->close();
   }
+  //loads texture for background
   sf::Texture texture;
   if(!texture.loadFromFile("resources/background.jpg")){
     cout << "Background error" << endl;
   }
+  //sets the background
   sf::Sprite background(texture);
   window->draw(background);
 
@@ -122,14 +137,19 @@ void game::drawBoardBackground(){
 
 
 }
-
+/**
+* Draws the initial puzzle values on the blank board
+*/
 sf::Text** game::drawInitialBoard(){
+  //draws background
   drawBoardBackground();
+  //loads font
   sf::Font font;
   if (!font.loadFromFile("resources/CourierNew.ttf")){
     cout << "font error" << endl;
     window->close();
   }
+  //makes each value a "tile" or text on the board in its respective square
   sf::Text **tiles;
   tiles = new sf::Text*[9];
   for (int i = 0; i < 9; ++i){
@@ -139,7 +159,7 @@ sf::Text** game::drawInitialBoard(){
     for (int j = 0; j < 9; j++){
       tiles[i][j] = sf::Text("A",font);
     }
-    //hint and solve buttons
+    //hint button and hint text
     sf::RectangleShape hintButton;
     hintButton.setSize(sf::Vector2f(400,150));
     hintButton.setPosition(sf::Vector2f(700,1300));
@@ -152,9 +172,8 @@ sf::Text** game::drawInitialBoard(){
     hintText.setCharacterSize(100);
     hintText.setFillColor(sf::Color::White);
     hintText.setPosition(775,1300);
-    //hintText.setOrigin(hintButton.getOrigin()+25);
     window->draw(hintText);
-
+    //solve button and solve text
     sf::RectangleShape solveButton;
     solveButton.setSize(sf::Vector2f(400,150));
     solveButton.setPosition(sf::Vector2f(1325,1300));
@@ -167,21 +186,18 @@ sf::Text** game::drawInitialBoard(){
     solveText.setCharacterSize(100);
     solveText.setFillColor(sf::Color::White);
     solveText.setPosition(1375,1300);
-    //solveText.setOrigin(solveButton.getOrigin());
     window->draw(solveText);
   }
-
-
+  //Based on difficulty, hides a certain number of tiles
   switch(difficulty){
-
     case 'e':
-    blankSpaces = rand() % 7 + 34;
+    blankSpaces = rand() % 7 + 25;
     break;
     case 'm':
-    blankSpaces = rand() % 7 + 43;
+    blankSpaces = rand() % 7 + 30;
     break;
     case 'h':
-    blankSpaces = rand() % 7 + 50;
+    blankSpaces = rand() % 7 + 36;
     break;
   }
   int count = 0;
@@ -193,7 +209,7 @@ sf::Text** game::drawInitialBoard(){
       count++;
     }
   }
-
+  //Displays all unhidden tiles
   for (int i = 0; i < 9; ++i){
     for (int j = 0; j < 9; ++j){
       int positionWidth = (155.5*(i+1));
@@ -209,22 +225,31 @@ sf::Text** game::drawInitialBoard(){
       window->draw(tiles[i][j]);
     }
   }
-
+  //Draws everything on board and returns tiles
   window->display();
   return tiles;
 }
-
+/**
+* Uses input to draw the current board
+*/
 void game::drawCurrentBoard(int row, int col, sf::Color color, int val){
+  //clears window of current drawings
   window->clear(sf::Color::Black);
+  //draws background
   drawBoardBackground();
   window->display();
+  //if the value is not 0, enter the given value on the board
   if (val!=0){
     enterValue(row,col,val);
   }
+  //draw red square around current spot
   window->draw(setSpot(row,col,color));
   window->display();
 }
 
+/**
+* Draws a red square around user's current position and returns the square (shape)
+*/
 sf::RectangleShape game::setSpot(int row, int col, sf::Color color){
   sf::RectangleShape spot(sf::Vector2f(100,100));
   spot.setPosition(tiles[row][col].getPosition());
@@ -235,23 +260,31 @@ sf::RectangleShape game::setSpot(int row, int col, sf::Color color){
   return spot;
 }
 
+/**
+* Given the user's current position, waits for user to move somewhere or give input
+* When input is given, the correct function for that input is called
+*/
 bool game::play(int currentRow, int currentCol){
-
   sf::Event event;
+
   while (window->waitEvent(event)){
+    //if user X's out, window closes
     if(event.type == sf::Event::Closed){
       window->close();
     }
     else if (event.type == sf::Event::MouseButtonPressed){
+      //if user wants hint, the next vertical empty tile is revealed by calling drawcurrentboard
       if (hintText.getGlobalBounds().contains(event.mouseButton.x,event.mouseButton.y)){
         drawCurrentBoard(currentRow,currentCol,sf::Color::Red,10);
         play(currentRow,currentCol);
       }
+      //goes to end screen if user solves puzzle
       else if (solveText.getGlobalBounds().contains(event.mouseButton.x,event.mouseButton.y)){
         return endScreen();
       }
 
     }
+    //depending on direction or number entered, square is moved or board is redrawn
     else if (event.type == sf::Event::KeyPressed){
       drawCurrentBoard(currentRow,currentCol,sf::Color::White,0);
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
@@ -280,45 +313,51 @@ bool game::play(int currentRow, int currentCol){
       }
       else{
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)){
-          numberPressed = 1;
+          drawCurrentBoard(currentRow,currentCol,sf::Color::Red,1);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)){
-          numberPressed = 2;
+          drawCurrentBoard(currentRow,currentCol,sf::Color::Red,2);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)){
-          numberPressed = 3;
+          drawCurrentBoard(currentRow,currentCol,sf::Color::Red,3);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)){
-          numberPressed = 4;
+          drawCurrentBoard(currentRow,currentCol,sf::Color::Red,4);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)){
-          numberPressed = 5;
+          drawCurrentBoard(currentRow,currentCol,sf::Color::Red,5);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)){
-          numberPressed = 6;
+          drawCurrentBoard(currentRow,currentCol,sf::Color::Red,6);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)){
-          numberPressed = 7;
+          drawCurrentBoard(currentRow,currentCol,sf::Color::Red,7);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)){
-          numberPressed = 8;
+          drawCurrentBoard(currentRow,currentCol,sf::Color::Red,8);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)){
-          numberPressed = 9;
+          drawCurrentBoard(currentRow,currentCol,sf::Color::Red,9);
         }
-        drawCurrentBoard(currentRow,currentCol,sf::Color::Red,numberPressed);
         play(currentRow,currentCol);
       }
     }
   }
+  return false;
 }
+/**
+* Draws the corrected version of board, noting whether entered values were right or wrong
+* Displays Quit and Replay buttons
+*/
 bool game::endScreen(){
+  //background and font loaded
   drawBoardBackground();
   sf::Font font;
   if (!font.loadFromFile("resources/CourierNew.ttf")){
     cout << "font error" << endl;
     window->close();
   }
+  //displays correct values and shows whether user didnt put in a value, got it right, or got it wrong
   for (int i = 0; i < 9; i++){
     for (int j =0; j<9; j++){
       tiles[i][j].setFont(font);
@@ -342,83 +381,80 @@ bool game::endScreen(){
       window->draw(tiles[i][j]);
     }
   }
+  //replay text and button
   sf::RectangleShape replayButton;
   sf::Text replayText("Replay",font);
-
   replayButton.setSize(sf::Vector2f(250,100));
   replayButton.setPosition(sf::Vector2f(100,200));
-
   replayButton.setOutlineColor(sf::Color::White);
   replayButton.setFillColor(sf::Color::Black);
   replayButton.setOutlineThickness(5);
-
   replayText.setFillColor(sf::Color::White);
   replayText.setCharacterSize(50);
   replayText.setPosition(130,210);
   window->draw(replayButton);
   window->draw(replayText);
-
+  //exit text and button
   sf::RectangleShape exitButton;
   sf::Text exitText("Quit",font);
-
   exitButton.setSize(sf::Vector2f(250,100));
   exitButton.setPosition(sf::Vector2f(100,400));
-
   exitButton.setOutlineColor(sf::Color::White);
   exitButton.setFillColor(sf::Color::Black);
   exitButton.setOutlineThickness(5);
-
   exitText.setFillColor(sf::Color::White);
   exitText.setCharacterSize(50);
   exitText.setPosition(150,410);
   window->draw(exitButton);
   window->draw(exitText);
-
-
+  //displays whether user won or not
   sf::RectangleShape resultButton;
   sf::Text resultText;
   resultButton.setSize(sf::Vector2f(1000,150));
   resultButton.setPosition(sf::Vector2f(725,1300));
-
   resultButton.setOutlineColor(sf::Color::White);
   resultButton.setOutlineThickness(5);
-
   if (correct.size() == blankSpaces){
     resultButton.setFillColor(sf::Color::Green);
     resultText.setString("You solved it!");
+    resultText.setPosition(760,1300);
   }
   else{
     resultButton.setFillColor(sf::Color::Red);
     resultText.setString("Sorry, you lost!");
+    resultText.setPosition(740,1300);
   }
-
   resultText.setFont(font);
   resultText.setCharacterSize(100);
   resultText.setFillColor(sf::Color::White);
-  resultText.setPosition(740,1300);
 
   window->draw(resultButton);
   window->draw(resultText);
-
-
   window->display();
+  //returns true or false to replay loop in main depending on whether user wants to play again
   sf::Event event;
   while (window->waitEvent(event)){
     if(event.type == sf::Event::Closed){
       window->close();
     }
     else if (event.type == sf::Event::MouseButtonPressed){
+      clearMemory();
       if (replayText.getGlobalBounds().contains(event.mouseButton.x,event.mouseButton.y)){
         return true;
       }
       else if (exitText.getGlobalBounds().contains(event.mouseButton.x,event.mouseButton.y)){
+        window->close();
         return false;
       }
-
     }
+  }
+  return false;
 }
-}
+/**
+* Deletes dynamic objects
+*/
 void game::clearMemory(){
   delete tiles;
+  p->deletePuzzle();
   delete p;
 }
