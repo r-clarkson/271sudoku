@@ -381,30 +381,18 @@ bool game::endScreen(){
       window->draw(tiles[i][j]);
     }
   }
-  //replay text and button
-  sf::RectangleShape replayButton;
-  sf::Text replayText("Replay",font);
-  replayButton.setSize(sf::Vector2f(250,100));
-  replayButton.setPosition(sf::Vector2f(100,200));
-  replayButton.setOutlineColor(sf::Color::White);
-  replayButton.setFillColor(sf::Color::Black);
-  replayButton.setOutlineThickness(5);
-  replayText.setFillColor(sf::Color::White);
-  replayText.setCharacterSize(50);
-  replayText.setPosition(130,210);
-  window->draw(replayButton);
-  window->draw(replayText);
+
   //exit text and button
   sf::RectangleShape exitButton;
-  sf::Text exitText("Quit",font);
-  exitButton.setSize(sf::Vector2f(250,100));
-  exitButton.setPosition(sf::Vector2f(100,400));
+  sf::Text exitText("QUIT",font);
+  exitButton.setSize(sf::Vector2f(350,150));
+  exitButton.setPosition(sf::Vector2f(1900,1300));
   exitButton.setOutlineColor(sf::Color::White);
   exitButton.setFillColor(sf::Color::Black);
   exitButton.setOutlineThickness(5);
   exitText.setFillColor(sf::Color::White);
-  exitText.setCharacterSize(50);
-  exitText.setPosition(150,410);
+  exitText.setCharacterSize(100);
+  exitText.setPosition(1950,1305);
   window->draw(exitButton);
   window->draw(exitText);
   //displays whether user won or not
@@ -439,10 +427,7 @@ bool game::endScreen(){
     }
     else if (event.type == sf::Event::MouseButtonPressed){
       clearMemory();
-      if (replayText.getGlobalBounds().contains(event.mouseButton.x,event.mouseButton.y)){
-        return true;
-      }
-      else if (exitText.getGlobalBounds().contains(event.mouseButton.x,event.mouseButton.y)){
+      if (exitText.getGlobalBounds().contains(event.mouseButton.x,event.mouseButton.y)){
         window->close();
         return false;
       }
