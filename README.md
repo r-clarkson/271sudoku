@@ -17,12 +17,8 @@ INSTRUCTIONS FOR COMPILING AND RUNNING
 NOTES ABOUT CODE
 ================
 
--bugs
+-can't maximize screen without errors
 
-  *the replay button does not always work
-
-  *can't maximize screen without errors
-
--these bugs are because it was my first time learning/using sfml and thus the graphics code is specific to my computer and somewhat bulky/messy 
+-it was my first time learning/using sfml and thus the graphics code is specific to my computer and somewhat bulky/messy 
 
 -however, the code for generating/solving a puzzle is efficient and works well (which is the point of the project)
